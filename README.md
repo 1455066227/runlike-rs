@@ -65,6 +65,10 @@ Download the archive for your platform from
 Unpack it and put the `runlike` binary (or `runlike.exe` on Windows) somewhere
 in your `PATH`.
 
+The Linux binaries are built against musl and statically linked, so they do not
+depend on the host's glibc version or on any bundled shared libraries — copy the
+single `runlike` file to any x86_64 or aarch64 Linux distribution and run it.
+
 ## Build from source
 
 ```console
@@ -84,16 +88,16 @@ Releases are built by GitHub Actions (`.github/workflows/release.yml`) whenever 
 tag starting with `v` is pushed:
 
 ```console
-$ git tag v1.6.3
-$ git push origin v1.6.3
+$ git tag v1.6.4
+$ git push origin v1.6.4
 ```
 
 The workflow runs formatting, Clippy and the test suite, then builds and
 publishes these assets to the GitHub release:
 
 - `runlike-windows-amd64.zip`
-- `runlike-linux-amd64.tar.gz`
-- `runlike-linux-aarch64.tar.gz`
+- `runlike-linux-amd64.tar.gz` (statically linked with musl)
+- `runlike-linux-aarch64.tar.gz` (statically linked with musl)
 - `runlike-macos-arm64.tar.gz`
 
 ## License

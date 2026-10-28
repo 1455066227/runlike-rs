@@ -39,21 +39,25 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            target: x86_64-unknown-linux-gnu
+            target: x86_64-unknown-linux-musl
             asset: runlike-linux-amd64
             archive: runlike-linux-amd64.tar.gz
+            cross: true
           - os: ubuntu-latest
-            target: aarch64-unknown-linux-gnu
+            target: aarch64-unknown-linux-musl
             asset: runlike-linux-aarch64
             archive: runlike-linux-aarch64.tar.gz
+            cross: true
           - os: macos-14
             target: aarch64-apple-darwin
             asset: runlike-macos-arm64
             archive: runlike-macos-arm64.tar.gz
+            cross: false
           - os: windows-latest
             target: x86_64-pc-windows-msvc
             asset: runlike-windows-amd64
             archive: runlike-windows-amd64.zip
+            cross: false
 
     steps:
       - name: Checkout
@@ -64,16 +68,28 @@ jobs:
         with:
           targets: ${{ matrix.target }}
 
-      - name: Install aarch64 linker
-        if: matrix.target == 'aarch64-unknown-linux-gnu'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y gcc-aarch64-linux-gnu
+      - name: Install cross
+        if: matrix.cross
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cross
 
-      - name: Build
+      - name: Build (statically linked Linux)
+        if: matrix.cross
+        run: cross build --release --locked --target ${{ matrix.target }}
+
+      - name: Build (native)
+        if: ${{ !matrix.cross }}
         run: cargo build --release --locked --target ${{ matrix.target }}
-        env:
-          CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: aarch64-linux-gnu-gcc
+
+      - name: Verify static Linux binary
+        if: matrix.cross
+        run: |
+          file "target/${{ matrix.target }}/release/runlike"
+          if ! file "target/${{ matrix.target }}/release/runlike" | grep -q "static"; then
+            echo "Expected a statically linked binary" >&2
+            exit 1
+          fi
 
       - name: Package (Unix)
         if: runner.os != 'Windows'
