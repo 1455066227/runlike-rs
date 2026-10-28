@@ -52,22 +52,29 @@ $ docker inspect my-container | runlike --stdin
 
 ## Install
 
-Download the archive for your platform from
+Download the single binary for your platform from
 [GitHub Releases](../../releases):
 
-| Platform              | Asset                        |
-| --------------------- | ---------------------------- |
-| Windows x86_64        | `runlike-windows-amd64.zip`  |
-| Linux x86_64          | `runlike-linux-amd64.tar.gz` |
-| Linux aarch64         | `runlike-linux-aarch64.tar.gz` |
-| macOS (Apple Silicon) | `runlike-macos-arm64.tar.gz` |
+| Platform              | Asset                    |
+| --------------------- | ------------------------ |
+| Windows x86_64        | `runlike-windows-amd64.exe` |
+| Linux x86_64          | `runlike-linux-amd64`    |
+| Linux aarch64         | `runlike-linux-aarch64`  |
+| macOS (Apple Silicon) | `runlike-macos-arm64`    |
 
-Unpack it and put the `runlike` binary (or `runlike.exe` on Windows) somewhere
+On Linux/macOS make it executable and put it somewhere in your `PATH`:
+
+```console
+$ chmod +x runlike-linux-amd64
+$ sudo mv runlike-linux-amd64 /usr/local/bin/runlike
+```
+
+On Windows just rename `runlike-windows-amd64.exe` to `runlike.exe` and put it
 in your `PATH`.
 
 The Linux binaries are built against musl and statically linked, so they do not
 depend on the host's glibc version or on any bundled shared libraries — copy the
-single `runlike` file to any x86_64 or aarch64 Linux distribution and run it.
+single file to any x86_64 or aarch64 Linux distribution and run it.
 
 ## Build from source
 
@@ -88,17 +95,17 @@ Releases are built by GitHub Actions (`.github/workflows/release.yml`) whenever 
 tag starting with `v` is pushed:
 
 ```console
-$ git tag v1.6.4
-$ git push origin v1.6.4
+$ git tag v1.6.5
+$ git push origin v1.6.5
 ```
 
 The workflow runs formatting, Clippy and the test suite, then builds and
-publishes these assets to the GitHub release:
+publishes these raw executables to the GitHub release:
 
-- `runlike-windows-amd64.zip`
-- `runlike-linux-amd64.tar.gz` (statically linked with musl)
-- `runlike-linux-aarch64.tar.gz` (statically linked with musl)
-- `runlike-macos-arm64.tar.gz`
+- `runlike-windows-amd64.exe`
+- `runlike-linux-amd64` (statically linked with musl)
+- `runlike-linux-aarch64` (statically linked with musl)
+- `runlike-macos-arm64`
 
 ## License
 
